@@ -1,3 +1,4 @@
+// IMPORTANTE: EL RELAY SE ACTIVA MANDANDO CERO
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
@@ -36,7 +37,7 @@ void loop() {
   
   getTemperature();
 
-  if(temp_actual == temp_previa){
+  if(temp_actual == temp_previa || ((temp_actual > T_min) && (temp_actual < T_max))){
     N_tendencia = 0;
   } else if((temp_actual < temp_previa) && (temp_actual < T_min)){
     N_tendencia--; // La tendencia es bajar.
@@ -45,11 +46,16 @@ void loop() {
   }
 
   if(N_tendencia >= Tend_max){
-    // ejecuta accion max
+    digitalWrite(Led_Verde, HIGH);
+    digitalWrite(Relay1, LOW);
   } else if(N_tendencia <= Tend_min){
-    // ejecuta accion min
+    digitalWrite(Led_Amarillo, HIGH);
+    digitalWrite(Relay2, LOW);
   } else{
-    // apagado
+    digitalWrite(Led_Amarillo, LOW);
+    digitalWrite(Relay2, HIGH);
+    digitalWrite(Led_Verde, LOW);
+    digitalWrite(Relay1, HIGH);
   }
 
   temp_previa = temp_actual;
